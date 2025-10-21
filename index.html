@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BondRadar – Progress Tracker</title>
+    <meta name="description" content="Simple progress tracker powered by a published Google Sheet." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: { 500: '#6366f1', 600: '#4f46e5' }
+            }
+          }
+        }
+      }
+    </script>
+  </head>
+  <body class="bg-slate-50 text-slate-900">
+    <header class="bg-[#0b1736] text-white">
+      <div class="mx-auto max-w-6xl px-4 py-5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <img src="9fin.jpg" alt="9fin" class="h-7 w-auto rounded-md ring-1 ring-white/10 shadow-sm opacity-95" onerror="this.style.display='none'" />
+          <h1 class="text-lg font-semibold tracking-tight">BondRadar · Progress Tracker</h1>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-6xl px-4 py-6">
+  <!-- Controls (hidden) -->
+  <section class="hidden mb-6 rounded-lg border border-slate-200 bg-white p-4 shadow-sm" aria-hidden="true">
+        <label for="publishedUrl" class="block text-sm font-medium text-slate-700">Published Google Sheet URL</label>
+        <input id="publishedUrl" type="text" class="mt-1 w-full rounded-md border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vQgyZLZ7pfUliJwmvi9z6CzpsE1ZEm4N97Bm6JgeaELaYkDpMX-PLZnrH89w-5HT15zXJLy25mUm3dR/pubhtml?gid=0&single=true" placeholder="Paste 'Publish to web' link e.g. https://docs.google.com/spreadsheets/d/e/.../pubhtml?gid=0&single=true" />
+        <div class="mt-3 flex gap-2">
+          <button id="loadBtn" class="inline-flex items-center justify-center gap-2 rounded-md bg-[#00e5a8] px-4 py-2 text-sm font-medium text-[#0b1736] shadow-sm hover:bg-[#00c697] focus:outline-none focus:ring-2 focus:ring-[#86fde8]">Load</button>
+        </div>
+        <p class="mt-3 text-xs text-slate-500">File → Share → Publish to web → copy the link and paste above.</p>
+        <div id="errorBox" class="mt-3 hidden rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"></div>
+      </section>
+
+      <!-- Two-column stats layout: News (left) and Quantanite (right) -->
+      <section class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <!-- News -->
+        <div class="rounded-xl border border-slate-100 bg-white p-5 shadow-md">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-base font-semibold text-slate-800">News Progress (IG Companies)</h2>
+            <span class="text-xs text-slate-400">Live</span>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Logos Sorted</p><p id="newsLogosSorted" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Ratings Collected</p><p id="newsRatingsCollected" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Aliases Collected</p><p id="newsAliasesCollected" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Crawlers Set Up</p><p id="newsCrawlersSetup" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+          </div>
+          <!-- News Completion (individual) -->
+          <div class="mt-5 space-y-3">
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Logos</span><span id="newsLogosPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="newsLogosBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="newsLogosText">0 / 1236</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Ratings</span><span id="newsRatingsPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="newsRatingsBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="newsRatingsText">0 / 1236</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Aliases</span><span id="newsAliasesPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="newsAliasesBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="newsAliasesText">0 / 1236</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Crawlers</span><span id="newsCrawlersPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="newsCrawlersBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="newsCrawlersText">0 / 1236</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Quantanite -->
+        <div class="rounded-xl border border-slate-100 bg-white p-5 shadow-md">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-base font-semibold text-slate-800">Quantanite Progress</h2>
+            <span class="text-xs text-slate-400">Live</span>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Documents Uploaded</p><p id="quantDocsUploaded" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Companies Completed</p><p id="quantCompaniesCompleted" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Logos Uploaded</p><p id="quantLogosUploaded" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Documents Added to 9fin</p><p id="quantDocsAddedTo9fin" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+          </div>
+        </div>
+      </section>
+
+      
+    </main>
+
+  <footer class="mx-auto max-w-6xl px-4 py-8 text-center text-xs text-slate-400">Built with Tailwind. Data from Google Sheets.</footer>
+
+    <script>
+  const els = {
+        url: document.getElementById('publishedUrl'),
+        loadBtn: document.getElementById('loadBtn'),
+        errorBox: document.getElementById('errorBox'),
+  // Custom stats elements
+  newsLogosSorted: document.getElementById('newsLogosSorted'),
+  newsRatingsCollected: document.getElementById('newsRatingsCollected'),
+  newsAliasesCollected: document.getElementById('newsAliasesCollected'),
+  newsCrawlersSetup: document.getElementById('newsCrawlersSetup'),
+  quantDocsUploaded: document.getElementById('quantDocsUploaded'),
+  quantCompaniesCompleted: document.getElementById('quantCompaniesCompleted'),
+  quantLogosUploaded: document.getElementById('quantLogosUploaded'),
+  quantDocsAddedTo9fin: document.getElementById('quantDocsAddedTo9fin'),
+  // News completion elements (individual)
+  newsLogosPct: document.getElementById('newsLogosPct'),
+  newsLogosBar: document.getElementById('newsLogosBar'),
+  newsLogosText: document.getElementById('newsLogosText'),
+  newsRatingsPct: document.getElementById('newsRatingsPct'),
+  newsRatingsBar: document.getElementById('newsRatingsBar'),
+  newsRatingsText: document.getElementById('newsRatingsText'),
+  newsAliasesPct: document.getElementById('newsAliasesPct'),
+  newsAliasesBar: document.getElementById('newsAliasesBar'),
+  newsAliasesText: document.getElementById('newsAliasesText'),
+  newsCrawlersPct: document.getElementById('newsCrawlersPct'),
+  newsCrawlersBar: document.getElementById('newsCrawlersBar'),
+  newsCrawlersText: document.getElementById('newsCrawlersText'),
+      };
+
+  const NEWS_TOTAL = 1236; // total number of companies for News scope
+
+      function showError(msg) {
+        els.errorBox.textContent = msg;
+        els.errorBox.classList.remove('hidden');
+      }
+      function clearError() {
+        els.errorBox.textContent = '';
+        els.errorBox.classList.add('hidden');
+      }
+
+      function publishedUrlToCsv(url) {
+        try {
+          const u = new URL(url);
+          const parts = u.pathname.split('/').filter(Boolean);
+          const isDE = parts[2] === 'e' && parts[1] === 'd';
+          const gid = u.searchParams.get('gid') || '0';
+          if (u.hostname === 'docs.google.com' && parts[0] === 'spreadsheets' && isDE) {
+            const key = parts[3];
+            return `https://docs.google.com/spreadsheets/d/e/${key}/pub?gid=${encodeURIComponent(gid)}&single=true&output=csv`;
+          }
+        } catch (e) {}
+        return null;
+      }
+
+      async function fetchPublishedCsv(url, timeoutMs = 15000) {
+        const csvUrl = publishedUrlToCsv(url);
+        if (!csvUrl) throw new Error('Please paste a valid published Google Sheet URL.');
+        const controller = new AbortController();
+        const to = setTimeout(() => controller.abort(), timeoutMs);
+        const res = await fetch(csvUrl, { signal: controller.signal, headers: { 'Cache-Control': 'no-cache' } });
+        clearTimeout(to);
+        if (!res.ok) throw new Error(`HTTP ${res.status} loading CSV`);
+        return res.text();
+      }
+
+      function parseCsvLine(line) {
+        const out = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (inQuotes) {
+            if (ch === '"') {
+              if (line[i + 1] === '"') { cur += '"'; i++; } else { inQuotes = false; }
+            } else cur += ch;
+          } else {
+            if (ch === '"') inQuotes = true;
+            else if (ch === ',') { out.push(cur); cur = ''; }
+            else cur += ch;
+          }
+        }
+        out.push(cur);
+        return out;
+      }
+
+      function parseCsvToRows(csvText) {
+        const lines = csvText.replace(/\r\n?/g, '\n').split('\n').filter(Boolean);
+        if (lines.length === 0) return [];
+        const headers = parseCsvLine(lines[0]).map((h) => h.toLowerCase().trim());
+        const idx = {
+          task: headers.findIndex((h) => /task|item|title/.test(h)),
+          status: headers.findIndex((h) => /status|state/.test(h)),
+          owner: headers.findIndex((h) => /owner|assignee|who/.test(h)),
+          eta: headers.findIndex((h) => /eta|due|target/.test(h)),
+          progress: headers.findIndex((h) => /progress|pct|percent/.test(h)),
+        };
+        const rows = [];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = parseCsvLine(lines[i]);
+          const get = (j) => (j >= 0 && j < cols.length ? cols[j] : '');
+          rows.push({
+            task: get(idx.task),
+            status: get(idx.status),
+            owner: get(idx.owner),
+            eta: get(idx.eta),
+            progress: toNumber(get(idx.progress)),
+          });
+        }
+        return rows;
+      }
+
+      function toNumber(v) {
+        if (v == null) return 0;
+        if (typeof v === 'number') return v;
+        const s = String(v).replace(/[^0-9.\-]/g, '');
+        const n = Number(s);
+        return Number.isFinite(n) ? n : 0;
+      }
+
+      function updateStats(stats) {
+        const defaults = {
+          newsLogosSorted: 0,
+          newsRatingsCollected: 0,
+          newsAliasesCollected: 0,
+          newsCrawlersSetup: 0,
+          quantDocsUploaded: 0,
+          quantCompaniesCompleted: 0,
+          quantLogosUploaded: 0,
+          quantDocsAddedTo9fin: 0,
+        };
+        const s = Object.assign(defaults, stats || {});
+        els.newsLogosSorted.textContent = s.newsLogosSorted;
+        els.newsRatingsCollected.textContent = s.newsRatingsCollected;
+        els.newsAliasesCollected.textContent = s.newsAliasesCollected;
+        els.newsCrawlersSetup.textContent = s.newsCrawlersSetup;
+        els.quantDocsUploaded.textContent = s.quantDocsUploaded;
+        els.quantCompaniesCompleted.textContent = s.quantCompaniesCompleted;
+        els.quantLogosUploaded.textContent = s.quantLogosUploaded;
+        els.quantDocsAddedTo9fin.textContent = s.quantDocsAddedTo9fin;
+
+        // Individual News completions (each out of NEWS_TOTAL)
+        const clamp = (n) => Math.max(0, Math.min(NEWS_TOTAL, Number(n) || 0));
+        const setBar = (val, pctEl, barEl, txtEl) => {
+          const pct = NEWS_TOTAL ? Math.round((clamp(val) / NEWS_TOTAL) * 100) : 0;
+          if (pctEl) pctEl.textContent = `${pct}%`;
+          if (barEl) barEl.style.width = `${pct}%`;
+          if (txtEl) txtEl.textContent = `${clamp(val)} / ${NEWS_TOTAL}`;
+        };
+        setBar(s.newsLogosSorted, els.newsLogosPct, els.newsLogosBar, els.newsLogosText);
+        setBar(s.newsRatingsCollected, els.newsRatingsPct, els.newsRatingsBar, els.newsRatingsText);
+        setBar(s.newsAliasesCollected, els.newsAliasesPct, els.newsAliasesBar, els.newsAliasesText);
+        setBar(s.newsCrawlersSetup, els.newsCrawlersPct, els.newsCrawlersBar, els.newsCrawlersText);
+      }
+
+      function getStatsFromCsv(csvText) {
+        const lines = csvText.replace(/\r\n?/g, '\n').split('\n').filter(Boolean);
+        if (!lines.length) return {};
+        const grid = lines.map(parseCsvLine); // full grid including first row
+        const headers = (grid[0] || []).map((h) => String(h).toLowerCase().trim());
+        const rows = grid.slice(1);
+
+        // Helpers to read specific cell addresses like 'F4' -> grid[3][5]
+        const colLettersToIndex = (letters) => {
+          let n = 0;
+          for (let i = 0; i < letters.length; i++) {
+            const c = letters.charCodeAt(i);
+            if (c >= 65 && c <= 90) n = n * 26 + (c - 64); // 'A'..'Z'
+            else if (c >= 97 && c <= 122) n = n * 26 + (c - 96); // 'a'..'z'
+          }
+          return n - 1; // zero-based
+        };
+        const getByAddress = (addr) => {
+          const m = String(addr).match(/^([A-Za-z]+)(\d+)$/);
+          if (!m) return undefined;
+          const col = colLettersToIndex(m[1]);
+          const row = parseInt(m[2], 10) - 1; // zero-based
+          if (row < 0 || col < 0) return undefined;
+          return (grid[row] && grid[row][col]) ?? undefined;
+        };
+
+        // Metric/Value style table support
+        const metricIdx = headers.findIndex((h) => ['metric', 'name', 'stat', 'key'].includes(h));
+        const valueIdx = headers.findIndex((h) => ['value', 'val', 'count', 'number'].includes(h));
+        const dict = {};
+        if (metricIdx !== -1 && valueIdx !== -1) {
+          for (const r of rows) {
+            const k = String(r[metricIdx] || '').toLowerCase().trim();
+            if (!k) continue;
+            dict[k] = toNumber(r[valueIdx]);
+          }
+        }
+
+        const byHeader = (candidates) => {
+          const idx = headers.findIndex((h) => candidates.includes(h));
+          if (idx === -1) return 0;
+          const val = rows[0]?.[idx] ?? 0;
+          return toNumber(val);
+        };
+        const pick = (syns) => {
+          for (const s of syns) {
+            if (dict[s] != null) return dict[s];
+          }
+          return byHeader(syns);
+        };
+
+        // Prefer exact cell addresses, fall back to header/metric parsing
+        const vOrPick = (addr, syns) => {
+          const v = getByAddress(addr);
+          const n = toNumber(v);
+          return n || pick(syns);
+        };
+
+        return {
+          // News (F4..F7)
+          newsLogosSorted: vOrPick('F4', ['logos sorted','news logos sorted','logos_sorted']),
+          newsRatingsCollected: vOrPick('F5', ['ratings collected','news ratings collected','ratings']),
+          newsAliasesCollected: vOrPick('F6', ['aliases collected','news aliases collected','aliases']),
+          newsCrawlersSetup: vOrPick('F7', ['crawlers set up','crawlers setup','news crawlers set up','crawlers']),
+          // Quantanite (B25..B28)
+          quantDocsUploaded: vOrPick('B25', ['documents uploaded','docs uploaded','quant documents uploaded']),
+          quantCompaniesCompleted: vOrPick('B26', ['companies completed','companies done','quant companies completed']),
+          quantLogosUploaded: vOrPick('B27', ['logos uploaded','quant logos uploaded']),
+          quantDocsAddedTo9fin: vOrPick('B28', ['documents added to 9fin','docs added to 9fin','documents to 9fin']),
+        };
+      }
+
+  // (Removed tasks/KPI rendering per request)
+
+      async function loadFromUrl() {
+        clearError();
+        const url = (els.url.value || '').trim();
+        if (!url) { showError('Please paste your published Google Sheet URL.'); return; }
+        try {
+          const csv = await fetchPublishedCsv(url);
+          // Update only the stat cards (no tasks/KPI rendering)
+          updateStats(getStatsFromCsv(csv));
+        } catch (e) { console.error(e); showError(e.message || 'Failed to load data.'); }
+      }
+
+      els.loadBtn.addEventListener('click', loadFromUrl);
+      // Auto-load from prefilled URL; initialize stats first
+      updateStats();
+      if (els.url && els.url.value) {
+        loadFromUrl();
+      }
+    </script>
+  </body>
+  </html>
