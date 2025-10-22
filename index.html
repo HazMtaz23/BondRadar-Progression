@@ -6,6 +6,7 @@
     <title>BondRadar – Progress Tracker</title>
     <meta name="description" content="Simple progress tracker powered by a published Google Sheet." />
     <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script>
       tailwind.config = {
         theme: {
@@ -49,7 +50,7 @@
             <span class="text-xs text-slate-400">Live</span>
           </div>
           <div class="grid grid-cols-2 gap-4">
-            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Logos Sorted</p><p id="newsLogosSorted" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Logos Uploaded</p><p id="newsLogosSorted" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
             <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Ratings Collected</p><p id="newsRatingsCollected" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
             <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Aliases Collected</p><p id="newsAliasesCollected" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
             <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Crawlers Set Up</p><p id="newsCrawlersSetup" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
@@ -59,22 +60,22 @@
             <div>
               <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Logos</span><span id="newsLogosPct" class="font-medium">0%</span></div>
               <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="newsLogosBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
-              <div class="mt-1 text-xs text-slate-500"><span id="newsLogosText">0 / 1236</span></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="newsLogosText">0 / 1235</span></div>
             </div>
             <div>
               <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Ratings</span><span id="newsRatingsPct" class="font-medium">0%</span></div>
               <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="newsRatingsBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
-              <div class="mt-1 text-xs text-slate-500"><span id="newsRatingsText">0 / 1236</span></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="newsRatingsText">0 / 1235</span></div>
             </div>
             <div>
               <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Aliases</span><span id="newsAliasesPct" class="font-medium">0%</span></div>
               <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="newsAliasesBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
-              <div class="mt-1 text-xs text-slate-500"><span id="newsAliasesText">0 / 1236</span></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="newsAliasesText">0 / 1235</span></div>
             </div>
             <div>
               <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Crawlers</span><span id="newsCrawlersPct" class="font-medium">0%</span></div>
               <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="newsCrawlersBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
-              <div class="mt-1 text-xs text-slate-500"><span id="newsCrawlersText">0 / 1236</span></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="newsCrawlersText">0 / 1235</span></div>
             </div>
           </div>
         </div>
@@ -90,10 +91,65 @@
             <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Logos Uploaded</p><p id="quantLogosUploaded" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
             <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Documents Added to 9fin</p><p id="quantDocsAddedTo9fin" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
           </div>
+          <!-- Quantanite Progress Bars: LATAM, IG, Overall -->
+          <div class="mt-5 space-y-3">
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">LATAM</span><span id="quantLatamPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="quantLatamBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="quantLatamText">0 / 0</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">IG</span><span id="quantIGPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="quantIGBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="quantIGText">0 / 0</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">EM</span><span id="quantEMPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="quantEMBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="quantEMText">0 / 0</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">CEEMEA</span><span id="quantCEEMEAPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="quantCEEMEABar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="quantCEEMEAText">0 / 0</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">APAC</span><span id="quantAPACPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="quantAPACBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="quantAPACText">0 / 0</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Overall</span><span id="quantOverallPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="quantOverallBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="quantOverallText">0 / 0</span></div>
+            </div>
+          </div>
         </div>
       </section>
 
-      
+      <!-- Weekly Companies Created (Line Chart) -->
+      <section class="mb-8 rounded-xl border border-slate-100 bg-white p-5 shadow-md">
+        <div class="mb-4 flex items-center justify-between">
+          <h2 class="text-base font-semibold text-slate-800">Quantanite · Weekly Companies Created</h2>
+          <span class="text-xs text-slate-400">Live</span>
+        </div>
+        <div class="h-40 sm:h-48">
+    <canvas id="weeklyChart"></canvas>
+        </div>
+    <p id="weeklyChartNote" class="mt-3 text-xs text-slate-500">Based on Quantanite sheet (Date=A, Total Completed=C). Groups by ISO week and anchors each label to that week’s Friday; shows cumulative weekly totals over time.</p>
+      </section>
+
+      <!-- Projection to 9016 (Line Chart) -->
+      <section class="mb-8 rounded-xl border border-slate-100 bg-white p-5 shadow-md">
+        <div class="mb-2 flex items-center justify-between">
+          <h2 class="text-base font-semibold text-slate-800">Quantanite · Projection to 9016</h2>
+          <span class="text-xs text-slate-400">Live</span>
+        </div>
+        <div class="h-40 sm:h-48">
+          <canvas id="projectionChart"></canvas>
+        </div>
+        <p id="projectionNote" class="mt-3 text-xs text-slate-500">Assumes a constant weekly creation rate equal to the average of observed weeks. Estimated completion: <span id="projectionEta">—</span></p>
+      </section>
     </main>
 
   <footer class="mx-auto max-w-6xl px-4 py-8 text-center text-xs text-slate-400">Built with Tailwind. Data from Google Sheets.</footer>
@@ -125,9 +181,28 @@
   newsCrawlersPct: document.getElementById('newsCrawlersPct'),
   newsCrawlersBar: document.getElementById('newsCrawlersBar'),
   newsCrawlersText: document.getElementById('newsCrawlersText'),
+  // Quantanite progress elements
+  quantLatamPct: document.getElementById('quantLatamPct'),
+  quantLatamBar: document.getElementById('quantLatamBar'),
+  quantLatamText: document.getElementById('quantLatamText'),
+  quantIGPct: document.getElementById('quantIGPct'),
+  quantIGBar: document.getElementById('quantIGBar'),
+  quantIGText: document.getElementById('quantIGText'),
+  quantEMPct: document.getElementById('quantEMPct'),
+  quantEMBar: document.getElementById('quantEMBar'),
+  quantEMText: document.getElementById('quantEMText'),
+  quantCEEMEAPct: document.getElementById('quantCEEMEAPct'),
+  quantCEEMEABar: document.getElementById('quantCEEMEABar'),
+  quantCEEMEAText: document.getElementById('quantCEEMEAText'),
+  quantAPACPct: document.getElementById('quantAPACPct'),
+  quantAPACBar: document.getElementById('quantAPACBar'),
+  quantAPACText: document.getElementById('quantAPACText'),
+  quantOverallPct: document.getElementById('quantOverallPct'),
+  quantOverallBar: document.getElementById('quantOverallBar'),
+  quantOverallText: document.getElementById('quantOverallText'),
       };
 
-  const NEWS_TOTAL = 1236; // total number of companies for News scope
+  const NEWS_TOTAL = 1235; // total number of companies for News scope
 
       function showError(msg) {
         els.errorBox.textContent = msg;
@@ -227,6 +302,13 @@
           quantCompaniesCompleted: 0,
           quantLogosUploaded: 0,
           quantDocsAddedTo9fin: 0,
+          // Quantanite totals
+          quantTotalCompanies: 0, // B1
+          quantLatamTotal: 0,     // B3
+          quantIGTotal: 0,        // F3
+          quantEMTotal: 0,        // B31
+          quantCEEMEATotal: 0,    // B32
+          quantAPACTotal: 0,      // B33
         };
         const s = Object.assign(defaults, stats || {});
         els.newsLogosSorted.textContent = s.newsLogosSorted;
@@ -250,6 +332,39 @@
         setBar(s.newsRatingsCollected, els.newsRatingsPct, els.newsRatingsBar, els.newsRatingsText);
         setBar(s.newsAliasesCollected, els.newsAliasesPct, els.newsAliasesBar, els.newsAliasesText);
         setBar(s.newsCrawlersSetup, els.newsCrawlersPct, els.newsCrawlersBar, els.newsCrawlersText);
+
+        // Quantanite progress
+        const totalCompanies = Number(s.quantTotalCompanies) || 0; // B1 (9016)
+        const latamTotal = Number(s.quantLatamTotal) || 0;         // B3 (381)
+        const igTotal = Number(s.quantIGTotal) || 0;               // F3 (1235)
+  const companiesCompleted = Number(s.quantCompaniesCompleted) || 0; // B26
+  const emTotal = Number(s.quantEMTotal) || 0;               // B31
+  const ceemeaTotal = Number(s.quantCEEMEATotal) || 0;       // B32
+  const apacTotal = Number(s.quantAPACTotal) || 0;           // B33
+
+        const setBarWithTotal = (completed, total, pctEl, barEl, txtEl) => {
+          const safeTotal = Math.max(0, Number(total) || 0);
+          const done = Math.max(0, Math.min(safeTotal, Number(completed) || 0));
+          const pct = safeTotal ? Math.round((done / safeTotal) * 100) : 0;
+          if (pctEl) pctEl.textContent = `${pct}%`;
+          if (barEl) barEl.style.width = `${pct}%`;
+          if (txtEl) txtEl.textContent = `${done} / ${safeTotal}`;
+        };
+
+        // LATAM: 100% complete
+        setBarWithTotal(latamTotal, latamTotal, els.quantLatamPct, els.quantLatamBar, els.quantLatamText);
+
+        // IG: (Companies Completed - LATAM) / IG Total
+        const igCompleted = Math.max(0, companiesCompleted - latamTotal);
+        setBarWithTotal(igCompleted, igTotal, els.quantIGPct, els.quantIGBar, els.quantIGText);
+
+  // EM / CEEMEA / APAC: 0% for now
+  setBarWithTotal(0, emTotal, els.quantEMPct, els.quantEMBar, els.quantEMText);
+  setBarWithTotal(0, ceemeaTotal, els.quantCEEMEAPct, els.quantCEEMEABar, els.quantCEEMEAText);
+  setBarWithTotal(0, apacTotal, els.quantAPACPct, els.quantAPACBar, els.quantAPACText);
+
+  // Overall: Companies Completed / Total Companies
+        setBarWithTotal(companiesCompleted, totalCompanies, els.quantOverallPct, els.quantOverallBar, els.quantOverallText);
       }
 
       function getStatsFromCsv(csvText) {
@@ -312,7 +427,7 @@
 
         return {
           // News (F4..F7)
-          newsLogosSorted: vOrPick('F4', ['logos sorted','news logos sorted','logos_sorted']),
+          newsLogosSorted: vOrPick('F4', ['logos sorted','news logos sorted','logos_uploaded','logos uploaded','logos_sorted']),
           newsRatingsCollected: vOrPick('F5', ['ratings collected','news ratings collected','ratings']),
           newsAliasesCollected: vOrPick('F6', ['aliases collected','news aliases collected','aliases']),
           newsCrawlersSetup: vOrPick('F7', ['crawlers set up','crawlers setup','news crawlers set up','crawlers']),
@@ -321,10 +436,244 @@
           quantCompaniesCompleted: vOrPick('B26', ['companies completed','companies done','quant companies completed']),
           quantLogosUploaded: vOrPick('B27', ['logos uploaded','quant logos uploaded']),
           quantDocsAddedTo9fin: vOrPick('B28', ['documents added to 9fin','docs added to 9fin','documents to 9fin']),
+          // Quantanite totals for progress
+          quantTotalCompanies: vOrPick('B1', ['total companies','total','companies total']), // 9016
+          quantLatamTotal: vOrPick('B3', ['latam total','latam companies']),                 // 381
+          quantIGTotal: vOrPick('F3', ['ig total','ig companies']),                          // 1235
+          quantEMTotal: vOrPick('B31', ['em total','em companies']),                         // EM total
+          quantCEEMEATotal: vOrPick('B32', ['ceemea total','ceemea companies']),            // CEEMEA total
+          quantAPACTotal: vOrPick('B33', ['apac total','apac companies']),                  // APAC total
         };
       }
 
   // (Removed tasks/KPI rendering per request)
+
+      // --- Weekly Chart: Quantanite companies created per week ---
+      function startOfISOWeekUTC(d) {
+        // Return a new Date at UTC midnight of the Monday of the ISO week for date d
+        const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        const day = date.getUTCDay() || 7; // Sun=0 -> 7
+        if (day !== 1) date.setUTCDate(date.getUTCDate() - (day - 1));
+        return date;
+      }
+      function addDaysUTC(d, n) {
+        const out = new Date(d.getTime());
+        out.setUTCDate(out.getUTCDate() + n);
+        return out;
+      }
+      function formatYYYYMMDDUTC(d) {
+        const y = d.getUTCFullYear();
+        const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+        const day = String(d.getUTCDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+      function formatDayMonYYYYUTC(d) {
+        const day = String(d.getUTCDate()).padStart(2, '0');
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const mon = months[d.getUTCMonth()];
+        const y = d.getUTCFullYear();
+        return `${day} ${mon} ${y}`;
+      }
+
+  function parseQuantaniteWeekly(csvText) {
+        const lines = csvText.replace(/\r\n?/g, '\n').split('\n').filter(Boolean);
+        if (lines.length < 2) return [];
+        // Assume row 1 is header; parse subsequent rows (C is DAILY completions)
+        const rows = [];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = parseCsvLine(lines[i]);
+          const dateStr = (cols[0] || '').trim(); // A
+          const dailyStr = (cols[2] || '').trim(); // C (daily completed)
+          const daily = toNumber(dailyStr);
+          const d = new Date(dateStr);
+          if (!isNaN(d)) rows.push({ date: d, daily });
+        }
+        // Sort by date asc
+        rows.sort((a,b) => a.date - b.date);
+        // Sum duplicates per day (if multiple entries exist for same date)
+        const byDay = new Map();
+        for (const r of rows) {
+          const key = r.date.toISOString().slice(0,10);
+          byDay.set(key, (byDay.get(key) || 0) + (r.daily || 0));
+        }
+        // Build weekly sums from daily totals, keyed by the Friday date of each ISO week
+        const days = Array.from(byDay.keys()).sort();
+        const dayTotals = days.map(k => ({ key: k, daily: byDay.get(k) }));
+        const weekly = new Map(); // key: 'YYYY-MM-DD' (Friday), value: weekly sum
+        for (let i = 0; i < dayTotals.length; i++) {
+          const cur = dayTotals[i];
+          const curDate = new Date(cur.key);
+          const monday = startOfISOWeekUTC(curDate);
+          const friday = addDaysUTC(monday, 4);
+          const fridayKey = formatYYYYMMDDUTC(friday);
+          weekly.set(fridayKey, (weekly.get(fridayKey) || 0) + (cur.daily || 0));
+        }
+        const labels = Array.from(weekly.keys()).sort(); // ISO date strings sort chronologically
+        const weeklyRaw = labels.map(k => weekly.get(k) || 0);
+        // Make it cumulative over weeks
+        const data = [];
+        for (let i = 0; i < weeklyRaw.length; i++) {
+          data[i] = (i === 0 ? 0 : data[i-1]) + weeklyRaw[i];
+        }
+        // Sanity: final cumulative should equal sum of all daily values
+        const expectedTotal = dayTotals.reduce((acc, d) => acc + (d.daily || 0), 0);
+        if (data.length && data[data.length - 1] !== expectedTotal) {
+          data[data.length - 1] = expectedTotal;
+        }
+        // Build pretty labels (exact Friday dates)
+        const pretty = labels.map(k => {
+          const d = new Date(`${k}T00:00:00Z`);
+          return formatDayMonYYYYUTC(d);
+        });
+        return { labels: pretty, data };
+      }
+
+  let weeklyChart;
+  let projectionChart;
+      function renderWeeklyChart(dataset) {
+        try {
+          const ctx = document.getElementById('weeklyChart');
+          if (!ctx) return;
+          if (weeklyChart) { weeklyChart.destroy(); }
+          weeklyChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: dataset.labels,
+              datasets: [{
+                label: 'Companies Created (weekly)',
+                data: dataset.data,
+                borderColor: '#00e5a8',
+                backgroundColor: 'rgba(0,229,168,0.2)',
+                tension: 0.25,
+                pointRadius: 2,
+                borderWidth: 2,
+                fill: true,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: { mode: 'index', intersect: false },
+              },
+              interaction: { mode: 'index', intersect: false },
+              scales: {
+                x: { ticks: { autoSkip: true, maxTicksLimit: 10, font: { size: 10 } }, grid: { display: false } },
+                y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: 'rgba(148,163,184,0.2)' } }
+              }
+            }
+          });
+        } catch (e) {
+          const note = document.getElementById('weeklyChartNote');
+          if (note) note.textContent = 'Failed to render chart.';
+          console.error(e);
+        }
+      }
+
+      async function loadWeeklyFromQuantaniteSheet() {
+        try {
+          // Hardcode to provided Quantanite published URL (gid=1595767531)
+          const url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQgyZLZ7pfUliJwmvi9z6CzpsE1ZEm4N97Bm6JgeaELaYkDpMX-PLZnrH89w-5HT15zXJLy25mUm3dR/pubhtml?gid=1595767531&single=true';
+          const csvText = await fetchPublishedCsv(url);
+          const weekly = parseQuantaniteWeekly(csvText);
+          renderWeeklyChart(weekly);
+          renderProjectionChart(weekly, 9016);
+        } catch (e) {
+          const note = document.getElementById('weeklyChartNote');
+          if (note) note.textContent = e.message || 'Failed to load weekly data.';
+          console.error(e);
+        }
+      }
+
+      function renderProjectionChart(weeklyDataset, targetTotal) {
+        try {
+          const labels = weeklyDataset.labels || [];
+          const cumulative = weeklyDataset.data || [];
+          if (!labels.length || !cumulative.length) return;
+          const lastTotal = cumulative[cumulative.length - 1] || 0;
+
+          // Derive weekly increments from cumulative
+          const weeklyIncrements = cumulative.map((v, i) => i === 0 ? v : v - cumulative[i - 1]);
+          // Average weekly rate over observed weeks (exclude any zero-length series)
+          const observedWeeks = weeklyIncrements.length;
+          const avgRate = observedWeeks ? (weeklyIncrements.reduce((a,b)=>a+b,0) / observedWeeks) : 0;
+
+          // Project forward week-by-week until reaching targetTotal
+          const projLabels = [...labels];
+          const projData = [...cumulative];
+          let current = lastTotal;
+          let weekCount = 0;
+          while (current < targetTotal && avgRate > 0 && weekCount < 520) { // cap at 10 years
+            current = Math.min(targetTotal, current + avgRate);
+            // Next Friday label from last known label (parse back to date)
+            const lastLabel = projLabels[projLabels.length - 1];
+            const [d, mon, y] = lastLabel.split(' ');
+            const months = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+            const lastDate = new Date(Date.UTC(parseInt(y,10), months[mon], parseInt(d,10)));
+            const nextFriday = addDaysUTC(lastDate, 7);
+            projLabels.push(formatDayMonYYYYUTC(nextFriday));
+            projData.push(Math.round(current));
+            weekCount++;
+          }
+
+          // Set ETA text
+          const etaEl = document.getElementById('projectionEta');
+          if (etaEl && projLabels.length > labels.length) {
+            etaEl.textContent = projLabels[projLabels.length - 1];
+          }
+
+          const ctx = document.getElementById('projectionChart');
+          if (!ctx) return;
+          if (projectionChart) projectionChart.destroy();
+          projectionChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: projLabels,
+              datasets: [
+                {
+                  label: 'Observed cumulative',
+                  data: cumulative,
+                  borderColor: '#00e5a8',
+                  backgroundColor: 'rgba(0,229,168,0.1)',
+                  pointRadius: 0,
+                  borderWidth: 2,
+                  tension: 0.25,
+                  fill: false,
+                },
+                {
+                  label: 'Projected cumulative',
+                  data: projData,
+                  borderColor: '#0ea5e9',
+                  backgroundColor: 'rgba(14,165,233,0.08)',
+                  pointRadius: 0,
+                  borderDash: [6,4],
+                  borderWidth: 2,
+                  tension: 0.25,
+                  fill: true,
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: { mode: 'index', intersect: false },
+              },
+              interaction: { mode: 'index', intersect: false },
+              scales: {
+                x: { ticks: { autoSkip: true, maxTicksLimit: 10, font: { size: 10 } }, grid: { display: false } },
+                y: { beginAtZero: true, ticks: { font: { size: 10 } }, grid: { color: 'rgba(148,163,184,0.2)' } }
+              }
+            }
+          });
+        } catch (e) {
+          const note = document.getElementById('projectionNote');
+          if (note) note.textContent = 'Failed to render projection.';
+          console.error(e);
+        }
+      }
 
       async function loadFromUrl() {
         clearError();
@@ -343,6 +692,8 @@
       if (els.url && els.url.value) {
         loadFromUrl();
       }
+  // Load weekly Quantanite chart
+  loadWeeklyFromQuantaniteSheet();
     </script>
   </body>
   </html>
