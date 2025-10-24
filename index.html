@@ -43,7 +43,43 @@
 
       <!-- Two-column stats layout: News (left) and Quantanite (right) -->
       <section class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
-        <!-- News -->
+        <!-- News (LATAM) -->
+        <div class="rounded-xl border border-slate-100 bg-white p-5 shadow-md">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-base font-semibold text-slate-800">News Progress (LATAM Companies)</h2>
+            <span class="inline-flex items-center gap-1 text-[10px] font-medium rounded-full bg-green-100 text-green-700 px-2 py-0.5 border border-green-200">✅ Completed</span>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Logos Uploaded</p><p id="latamNewsLogos" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Ratings Collected</p><p id="latamNewsRatings" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Aliases Collected</p><p id="latamNewsAliases" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+            <div class="rounded-lg border border-slate-100 bg-slate-50 p-3"><p class="text-[11px] uppercase tracking-wide text-slate-500">Crawlers Set Up</p><p id="latamNewsCrawlers" class="mt-1 text-xl font-semibold text-slate-800">0</p></div>
+          </div>
+          <!-- LATAM News Completion (always 100% of 381) -->
+          <div class="mt-5 space-y-3">
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Logos</span><span id="latamNewsLogosPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="latamNewsLogosBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="latamNewsLogosText">0 / 381</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Ratings</span><span id="latamNewsRatingsPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="latamNewsRatingsBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="latamNewsRatingsText">0 / 381</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Aliases</span><span id="latamNewsAliasesPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="latamNewsAliasesBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="latamNewsAliasesText">0 / 381</span></div>
+            </div>
+            <div>
+              <div class="mb-1 flex items-center justify-between text-sm"><span class="text-slate-700">Crawlers</span><span id="latamNewsCrawlersPct" class="font-medium">0%</span></div>
+              <div class="h-3 w-full rounded-full bg-slate-200 overflow-hidden"><div id="latamNewsCrawlersBar" class="h-3 rounded-full bg-gradient-to-r from-[#00e5a8] to-teal-400 transition-all" style="width:0%"></div></div>
+              <div class="mt-1 text-xs text-slate-500"><span id="latamNewsCrawlersText">0 / 381</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- News (IG) -->
         <div class="rounded-xl border border-slate-100 bg-white p-5 shadow-md">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-base font-semibold text-slate-800">News Progress (IG Companies)</h2>
@@ -142,7 +178,7 @@
       <!-- Projection to 9016 (Line Chart) -->
       <section class="mb-8 rounded-xl border border-slate-100 bg-white p-5 shadow-md">
         <div class="mb-2 flex items-center justify-between">
-          <h2 class="text-base font-semibold text-slate-800">Quantanite · Projection to 9016</h2>
+          <h2 class="text-base font-semibold text-slate-800">Quantanite · Projection to complete 9016 Companies</h2>
           <span class="text-xs text-slate-400">Live</span>
         </div>
         <div class="h-40 sm:h-48">
@@ -181,6 +217,23 @@
   newsCrawlersPct: document.getElementById('newsCrawlersPct'),
   newsCrawlersBar: document.getElementById('newsCrawlersBar'),
   newsCrawlersText: document.getElementById('newsCrawlersText'),
+  // LATAM News completion elements (always 100% of 381)
+  latamNewsLogos: document.getElementById('latamNewsLogos'),
+  latamNewsRatings: document.getElementById('latamNewsRatings'),
+  latamNewsAliases: document.getElementById('latamNewsAliases'),
+  latamNewsCrawlers: document.getElementById('latamNewsCrawlers'),
+  latamNewsLogosPct: document.getElementById('latamNewsLogosPct'),
+  latamNewsLogosBar: document.getElementById('latamNewsLogosBar'),
+  latamNewsLogosText: document.getElementById('latamNewsLogosText'),
+  latamNewsRatingsPct: document.getElementById('latamNewsRatingsPct'),
+  latamNewsRatingsBar: document.getElementById('latamNewsRatingsBar'),
+  latamNewsRatingsText: document.getElementById('latamNewsRatingsText'),
+  latamNewsAliasesPct: document.getElementById('latamNewsAliasesPct'),
+  latamNewsAliasesBar: document.getElementById('latamNewsAliasesBar'),
+  latamNewsAliasesText: document.getElementById('latamNewsAliasesText'),
+  latamNewsCrawlersPct: document.getElementById('latamNewsCrawlersPct'),
+  latamNewsCrawlersBar: document.getElementById('latamNewsCrawlersBar'),
+  latamNewsCrawlersText: document.getElementById('latamNewsCrawlersText'),
   // Quantanite progress elements
   quantLatamPct: document.getElementById('quantLatamPct'),
   quantLatamBar: document.getElementById('quantLatamBar'),
@@ -332,6 +385,22 @@
         setBar(s.newsRatingsCollected, els.newsRatingsPct, els.newsRatingsBar, els.newsRatingsText);
         setBar(s.newsAliasesCollected, els.newsAliasesPct, els.newsAliasesBar, els.newsAliasesText);
         setBar(s.newsCrawlersSetup, els.newsCrawlersPct, els.newsCrawlersBar, els.newsCrawlersText);
+
+        // LATAM News card: fixed at 381/381 (100%) for all four metrics
+        const LATAM_NEWS_TOTAL = 381;
+        const setLatam = (pctEl, barEl, txtEl) => {
+          if (pctEl) pctEl.textContent = '100%';
+          if (barEl) barEl.style.width = '100%';
+          if (txtEl) txtEl.textContent = `${LATAM_NEWS_TOTAL} / ${LATAM_NEWS_TOTAL}`;
+        };
+        if (els.latamNewsLogos) els.latamNewsLogos.textContent = LATAM_NEWS_TOTAL;
+        if (els.latamNewsRatings) els.latamNewsRatings.textContent = LATAM_NEWS_TOTAL;
+        if (els.latamNewsAliases) els.latamNewsAliases.textContent = LATAM_NEWS_TOTAL;
+        if (els.latamNewsCrawlers) els.latamNewsCrawlers.textContent = LATAM_NEWS_TOTAL;
+        setLatam(els.latamNewsLogosPct, els.latamNewsLogosBar, els.latamNewsLogosText);
+        setLatam(els.latamNewsRatingsPct, els.latamNewsRatingsBar, els.latamNewsRatingsText);
+        setLatam(els.latamNewsAliasesPct, els.latamNewsAliasesBar, els.latamNewsAliasesText);
+        setLatam(els.latamNewsCrawlersPct, els.latamNewsCrawlersBar, els.latamNewsCrawlersText);
 
         // Quantanite progress
         const totalCompanies = Number(s.quantTotalCompanies) || 0; // B1 (9016)
