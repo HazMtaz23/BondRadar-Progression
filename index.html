@@ -283,6 +283,20 @@
     </div>
   <p class="mt-2 text-[11px] text-slate-500">Assumption: Base workload is a 10-year backfill to 2015. Reducing N years reduces remaining work by N/10 (simple proportional heuristic). Table includes 2015 (no reduction), 2018, 2020, and 2022.</p>
   </div>
+  <!-- Combined Heatmap: Team Size vs Backfill Horizon -->
+  <div id="combinedHeatmap" class="mt-8">
+    <h3 class="text-xs font-semibold text-slate-700 mb-2">Team size × Backfill horizon heatmap</h3>
+    <p class="text-[11px] text-slate-500 mb-2">Cells show ETA (Friday) to reach target given team size and chosen backfill horizon (proportional reduction). Color scale: greener = sooner, redder = later.</p>
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-xs text-left text-slate-700">
+        <thead class="text-[11px] uppercase tracking-wide text-slate-500">
+          <tr id="heatmapHeadRow"><th class="py-1 pr-4">Team size ↓ / Horizon →</th></tr>
+        </thead>
+        <tbody id="heatmapBody" class="divide-y divide-slate-200"></tbody>
+      </table>
+    </div>
+    <p id="heatmapLegend" class="mt-2 text-[10px] text-slate-500">Legend loading…</p>
+  </div>
       </section>
     </main>
 
@@ -909,6 +923,100 @@
               `;
               backfillBody.appendChild(tr);
             });
+          }
+
+          // Combined heatmap (team sizes × backfill horizons)
+          const heatmapHeadRow = document.getElementById('heatmapHeadRow');
+          const heatmapBody = document.getElementById('heatmapBody');
+          const heatmapLegend = document.getElementById('heatmapLegend');
+          if (heatmapHeadRow && heatmapBody && heatmapLegend) {
+            // Horizons: every year 2015-2022, with proportional reduction of (year-2015)/10 capped 0..1
+            const horizons = [];
+            for (let yr = 2015; yr <= 2022; yr++) {
+              horizons.push({ label: String(yr), reduceYears: yr - 2015 });
+            }
+            // Team sizes: only 7..20 (as requested)
+            const teamSizes = Array.from({ length: 14 }, (_, i) => i + 7);
+            // Build header horizon columns (skip first placeholder cell already present)
+            heatmapHeadRow.innerHTML = '<th class="py-1 pr-4">Team size ↓ / Horizon →</th>' + horizons.map(h => `<th class="py-1 pr-2">${h.label}</th>`).join('');
+            heatmapBody.innerHTML = '';
+            // Precompute start date from last observed label
+            const lastLabel = labels[labels.length - 1];
+            const [ld, lmon, ly] = lastLabel.split(' ');
+            const monthIdxMap = {Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+            const startDate = new Date(Date.UTC(parseInt(ly,10), monthIdxMap[lmon], parseInt(ld,10)));
+            const fmtDate = (date) => {
+              if (!(date instanceof Date) || isNaN(date)) return '—';
+              const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+              return `${String(date.getUTCDate()).padStart(2,'0')} ${months[date.getUTCMonth()]} ${date.getUTCFullYear()}`;
+            };
+            // Compute matrix of weeks remaining for coloring
+            const matrixWeeks = [];
+            let minWeeks = Infinity;
+            let maxWeeks = -Infinity;
+            teamSizes.forEach(sz => {
+              const rateSz = baseAvgRate * (sz / 7);
+              const rowWeeks = horizons.map(h => {
+                const reduction = Math.min(1, Math.max(0, h.reduceYears / 10));
+                const remainingAdj = Math.max(0, (targetTotal - lastTotal) * (1 - reduction));
+                const weeks = rateSz > 0 ? Math.ceil(remainingAdj / rateSz) : null;
+                if (weeks != null) {
+                  if (weeks < minWeeks) minWeeks = weeks;
+                  if (weeks > maxWeeks) maxWeeks = weeks;
+                }
+                return weeks;
+              });
+              matrixWeeks.push({ team: sz, weeks: rowWeeks });
+            });
+            // Multi-stop gradient (fast -> slow): Green (#00e5a8) -> Yellow (#fde047) -> Orange (#fb923c) -> Red (#ef4444)
+            const gradientStops = [
+              { t: 0, color: [0,229,168] },
+              { t: 0.33, color: [253,224,71] },
+              { t: 0.66, color: [251,146,60] },
+              { t: 1, color: [239,68,68] }
+            ];
+            const lerpColor = (c1, c2, t) => c1.map((v,i)=>Math.round(v + (c2[i]-v)*t));
+            const sampleGradient = (t) => {
+              for (let i=0;i<gradientStops.length-1;i++) {
+                const a = gradientStops[i];
+                const b = gradientStops[i+1];
+                if (t >= a.t && t <= b.t) {
+                  const localT = (t - a.t)/(b.t - a.t);
+                  const rgb = lerpColor(a.color, b.color, localT);
+                  return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+                }
+              }
+              const last = gradientStops[gradientStops.length-1].color;
+              return `rgb(${last[0]},${last[1]},${last[2]})`;
+            };
+            const colorForWeeks = (w) => {
+              if (w == null) return 'transparent';
+              if (!isFinite(minWeeks) || !isFinite(maxWeeks) || maxWeeks === minWeeks) return '#00e5a8';
+              const t = (w - minWeeks) / (maxWeeks - minWeeks);
+              return sampleGradient(Math.min(1, Math.max(0, t)));
+            };
+            // Build rows
+            matrixWeeks.forEach(row => {
+              const tr = document.createElement('tr');
+              const cells = [`<td class="py-1 pr-4 font-medium text-slate-700">${row.team}</td>`];
+              cells.push(...row.weeks.map((w, idx) => {
+                const color = colorForWeeks(w);
+                let eta = '—';
+                if (w != null) {
+                  const etaDate = addDaysUTC(startDate, 7 * w);
+                  eta = fmtDate(etaDate);
+                }
+                return `<td class="py-1 px-2 text-[11px]" style="background:${color};color:#0b1736;">${eta}</td>`;
+              }));
+              tr.innerHTML = cells.join('');
+              heatmapBody.appendChild(tr);
+            });
+            // Legend summary
+            if (isFinite(minWeeks) && isFinite(maxWeeks)) {
+              heatmapLegend.innerHTML = `Fastest (${minWeeks} wks) → Slowest (${maxWeeks} wks) gradient:<div class="mt-1 flex h-3 w-48 overflow-hidden rounded"><div style="flex:1;background:#00e5a8"></div><div style="flex:1;background:#fde047"></div><div style="flex:1;background:#fb923c"></div><div style="flex:1;background:#ef4444"></div></div>`;
+            } else {
+              heatmapLegend.textContent = 'Heatmap unavailable (insufficient data).';
+            }
           }
 
           const ctx = document.getElementById('projectionChart');
